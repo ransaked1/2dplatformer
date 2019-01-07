@@ -91,7 +91,10 @@ int main()
 			else
 				velocityX = 0;
 		}
+		
+		//Code to be put in applyPhysics (without breaking everything!)
 
+	//-----------------------------------------\\
 		//applying physics
 		if (onGround == false || inAir == true)   //if object is not on the ground or in the air apply gravity
 		{
@@ -127,6 +130,7 @@ int main()
 		}
 		else
 			onGround = false;
+	//------------------------------------------------\\
 
 		//debuging
 		cout << player.getPosition().x << " " << player.getPosition().y << endl;
