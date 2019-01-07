@@ -57,11 +57,11 @@ export DISPLAY=:0.0
 
 ## Game Controls
 
-W - Jump
+W, Up Arrow - Jump
 
-A - Left
+A, Left Arrow - Left
 
-D - Right
+D, Right Arrow - Right
 
 ## Built With
 * [SFML](https://www.sfml-dev.org/documentation/2.5.1/) - The graphical library used
