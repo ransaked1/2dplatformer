@@ -42,7 +42,7 @@ int main()
 	bool onGround;								//Is the player on the ground?
 	bool inAir;										//Is the player going against the gravity?
 
-	const double gravity = 1.6;   //global gravity always positive nr (going down)
+	const double gravity = 2.7;   //global gravity always positive nr (going down)
 	double velocityX = 0;					//player velocity in X direction
 	double velocityY = 0;					//player velocity in Y direction
 
@@ -72,16 +72,22 @@ int main()
 					break;
 			}
 
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && onGround == true) //can jump only once when on the ground
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 			{
-					velocityY = -20;
+				window.close();
+				break;
+			}
+
+			if ((sf::Keyboard::isKeyPressed(sf::Keyboard::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) && onGround == true) //can jump only once when on the ground
+			{
+					velocityY = -30;
 					onGround = false;
 			}
 
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))    // left and right movement
-				velocityX = 2;
-			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-				velocityX = -2;
+			if ((sf::Keyboard::isKeyPressed(sf::Keyboard::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right)))    // left and right movement
+				velocityX = 6;
+			else if ((sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left)))
+				velocityX = -6;
 			else
 				velocityX = 0;
 		}
@@ -92,8 +98,8 @@ int main()
 			player.move(velocityX, velocityY);
 
 			velocityY += gravity;					//gravity decelerating velocityY
-			if(velocityY > gravity * 2)   //terminal velocity = is gravity x constant
-				velocityY = gravity * 2;
+			if(velocityY > gravity  )   //terminal velocity = is gravity x constant
+				velocityY = gravity ;
 		}
 		else
 			player.move(velocityX, 0);		//if no change in Y move on X axis
@@ -108,17 +114,24 @@ int main()
 		else
 			inAir = false;
 
-		//Checking if player is intersection a ground object and testing if its over the ground
-		if ((player.getGlobalBounds().intersects(ground.getGlobalBounds()) && ground.getPosition().y - 22 >= player.getPosition().y) ||
-		(player.getGlobalBounds().intersects(ground2.getGlobalBounds()) && ground2.getPosition().y - 22 >= player.getPosition().y))
+		//Checking if player is intersection a ground object and verifying if its over the ground
+		if (player.getGlobalBounds().intersects(ground.getGlobalBounds()) && ground.getPosition().y - (player.getSize().y - 0.1) < player.getPosition().y && ground.getPosition().y - 22  > player.getPosition().y)
+		{
+			player.setPosition(player.getPosition().x, ground.getPosition().y - (player.getSize().y - 0.1));
 			onGround = true;
+		}
+		else if (player.getGlobalBounds().intersects(ground2.getGlobalBounds()) && ground2.getPosition().y - (player.getSize().y - 0.1) < player.getPosition().y && ground2.getPosition().y - 22 > player.getPosition().y)
+		{
+			player.setPosition(player.getPosition().x, ground2.getPosition().y - (player.getSize().y - 0.1));
+			onGround = true;
+		}
 		else
 			onGround = false;
 
 		//debuging
-		//cout << player.getPosition().x << " " << player.getPosition().y << endl;
+		cout << player.getPosition().x << " " << player.getPosition().y << endl;
 		//cout << ground2.getPosition().x << " " << ground2.getPosition().y << endl;
-		//cout << "onGround: " << onGround << "   " << "inAir: " << inAir << endl;
+		cout << "onGround: " << onGround << "   " << "inAir: " << inAir << endl;
 
 		//post processing
 		view.setCenter(player.getPosition().x + 80, player.getPosition().y - 80); 		//set screen following player
