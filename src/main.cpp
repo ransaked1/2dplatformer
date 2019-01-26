@@ -4,15 +4,35 @@
 using namespace std;
 
 /*TO DO!
--put everything physics related in applyPhysics
--learn level building or generate randomly
--prepare input for pluging in AI
--create a ground class and objects?
+- generate platforms of random sizes at random heights
+-have a vector with max 5 platforms at a time
+-change how the camera follows the player
+-prepare input for pluging in NN
 */
 
-void	applyPhysics(sf::RectangleShape *player, sf::RectangleShape *ground, double *velocityY)
+void	applyPhysics(sf::RectangleShape *player, double *velocityY, bool *onGround, bool *inAir, double gravity, double velocityX)
 {
+	//if object is not on the ground or in the air apply gravity
+	if (*onGround == false || *inAir == true)
+	{
+		player->move(velocityX, *velocityY);
 
+		*velocityY += gravity;					//gravity decelerating velocityY
+		if(*velocityY > 2 * gravity)   //terminal velocity = is gravity x constant
+			*velocityY = 2 * gravity ;
+	}
+	else
+		player->move(velocityX, 0);		//if no change in Y move on X axis
+
+	//reset player after falling off (bellow pixel 440 from top)
+	if (player->getPosition().y > 440)
+		player->setPosition(50, 300);
+
+	//If the object is accelerating upward and is not on the ground then it's in the air
+	if (*velocityY < 0 && *onGround == false)
+		*inAir = true;
+	else
+		*inAir = false;
 }
 
 int main()
@@ -31,13 +51,23 @@ int main()
 	player.setPosition(50, 300);
 	player.setFillColor(sf::Color::Red);
 
+	std::vector<sf::RectangleShape> groundList;		//creating the ground vector
+
 	sf::RectangleShape ground;			//the long ground object
 	ground.setSize(sf::Vector2f(1000, 30));
 	ground.setPosition(0, 400);
 
 	sf::RectangleShape ground2;			//a platform
 	ground2.setSize(sf::Vector2f(150, 30));
-	ground2.setPosition(200, 340);
+	ground2.setPosition(200, 310);
+
+	sf::RectangleShape ground3;			//a platform
+	ground3.setSize(sf::Vector2f(150, 30));
+	ground3.setPosition(1200, 340);
+
+	groundList.push_back(ground);		//putting the predefined init ground objects
+	groundList.push_back(ground2);
+	groundList.push_back(ground3);
 
 	bool onGround;								//Is the player on the ground?
 	bool inAir;										//Is the player going against the gravity?
@@ -62,15 +92,8 @@ int main()
 		//checking if there is any button pressed before updating the frame
 		while (window.pollEvent(event))
 		{
-			switch (event.type)
-			{
-				case sf::Event::Closed: //if window is getting closed
-					window.close();
-					break;
-
-				default: //if none of the above
-					break;
-			}
+			if (event.type == sf::Event::Closed)
+				window.close();
 
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 			{
@@ -91,51 +114,27 @@ int main()
 			else
 				velocityX = 0;
 		}
-		
-		//Code to be put in applyPhysics (without breaking everything!)
 
-	//-----------------------------------------\\
 		//applying physics
-		if (onGround == false || inAir == true)   //if object is not on the ground or in the air apply gravity
-		{
-			player.move(velocityX, velocityY);
-
-			velocityY += gravity;					//gravity decelerating velocityY
-			if(velocityY > gravity  )   //terminal velocity = is gravity x constant
-				velocityY = gravity ;
-		}
-		else
-			player.move(velocityX, 0);		//if no change in Y move on X axis
-
-		//reset player after falling off (bellow pixel 440 from top)
-		if (player.getPosition().y > 440)
-			player.setPosition(50, 300);
-
-		//If the object is accelerating upward and is not on the ground then it's in the air
-		if (velocityY < 0 && onGround == false)
-			inAir = true;
-		else
-			inAir = false;
+		applyPhysics(&player, &velocityY, &onGround, &inAir, gravity, velocityX);
 
 		//Checking if player is intersection a ground object and verifying if its over the ground
-		if (player.getGlobalBounds().intersects(ground.getGlobalBounds()) && ground.getPosition().y - (player.getSize().y - 0.1) < player.getPosition().y && ground.getPosition().y - 22  > player.getPosition().y)
+		//for the next iteration
+		onGround = false;
+		for (int i = 0; i <= groundList.size() - 1; i++)
 		{
-			player.setPosition(player.getPosition().x, ground.getPosition().y - (player.getSize().y - 0.1));
-			onGround = true;
+			if (player.getGlobalBounds().intersects(groundList[i].getGlobalBounds()) && groundList[i].getPosition().y - (player.getSize().y - 0.1) < player.getPosition().y && groundList[i].getPosition().y - 20  > player.getPosition().y)
+			{
+				player.setPosition(player.getPosition().x, groundList[i].getPosition().y - (player.getSize().y - 0.1));
+				onGround = true;
+			}
 		}
-		else if (player.getGlobalBounds().intersects(ground2.getGlobalBounds()) && ground2.getPosition().y - (player.getSize().y - 0.1) < player.getPosition().y && ground2.getPosition().y - 22 > player.getPosition().y)
-		{
-			player.setPosition(player.getPosition().x, ground2.getPosition().y - (player.getSize().y - 0.1));
-			onGround = true;
-		}
-		else
-			onGround = false;
-	//------------------------------------------------\\
 
 		//debuging
-		cout << player.getPosition().x << " " << player.getPosition().y << endl;
-		//cout << ground2.getPosition().x << " " << ground2.getPosition().y << endl;
-		cout << "onGround: " << onGround << "   " << "inAir: " << inAir << endl;
+		//cout << player.getPosition().x << " " << player.getPosition().y << endl;
+		//cout << groundList[0].getPosition().x << " " << groundList[0].getPosition().y << endl;
+		//cout << "onGround: " << onGround << "   " << "inAir: " << inAir << endl;
+		//std::cout << groundList.size() << endl;
 
 		//post processing
 		view.setCenter(player.getPosition().x + 80, player.getPosition().y - 80); 		//set screen following player
@@ -148,8 +147,8 @@ int main()
 		window.clear();				//clear scene
 
 		window.draw(player);	//set objects to be drawn
-		window.draw(ground);
-		window.draw(ground2);
+		for (int i = 0; i <= groundList.size() - 1; i++)
+			window.draw(groundList[i]);
 		window.draw(text);
 
 		window.display();			//draw the scene
