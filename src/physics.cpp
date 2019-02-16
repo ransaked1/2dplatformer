@@ -17,7 +17,7 @@ void	applyPhysics(sf::RectangleShape *player, double *velocityY, bool *onGround,
 		player->move(velocityX, 0);		//if no change in Y move on X axis
 
 	//reset player after falling off
-	if (player->getPosition().y > 4000)
+	if (player->getPosition().y > 2500)
   {
 		player->setPosition(50, 390);
     *gameOn = false;

@@ -24,6 +24,8 @@ int main()
 	sf::View view(sf::FloatRect(50.f, 100.f, 500.f, 500.f));                  //initializing the field of view
 
 	sf::Clock clock;	//initializing the clock
+	sf::Clock speedClock;
+	sf::Time	speedTIme;
 	sf::Time	time;		//initializing the time variable
 	sf::Int64 msec;		//the time is going to be converted to microseconds
 
@@ -45,22 +47,17 @@ int main()
 
 	sf::RectangleShape ground2;			//a platform
 	ground2.setSize(sf::Vector2f(150, 30));
-	ground2.setPosition(200, 310);
-
-	sf::RectangleShape ground3;			//a platform
-	ground3.setSize(sf::Vector2f(150, 30));
-	ground3.setPosition(1100, 340);
+	ground2.setPosition(1150, 340);
 
 	groundList.push_back(ground);		//putting the predefined init ground objects
 	groundList.push_back(ground2);
-	groundList.push_back(ground3);
 
 	bool onGround;								//Is the player on the ground?
 	bool inAir;										//Is the player going against the gravity?
 	bool gameOn = false;									//Is the game stopped?
 
 	double gravity;   //global gravity always positive nr (going down)
-	double velocityX = 3;					//player velocity in X direction
+	double velocityX = 4.5;					//player velocity in X direction
 	double velocityY = 0;					//player velocity in Y direction
 
 	sf::Font font;
@@ -70,7 +67,7 @@ int main()
 	text.setCharacterSize(25);
 
 	int score = 0;
-	float gameSpeed = 3;
+	//float gameSpeed = 4.5;
 
 	//infinite loop while window is open
 	while (window.isOpen())
@@ -108,7 +105,10 @@ int main()
 			}
 
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) //can jump only once when on the ground
-					gameOn = true;
+			{
+				gameOn = true;
+				speedClock.restart();
+			}
 		}
 
 		//applying physics over time
@@ -118,12 +118,13 @@ int main()
 		if (msec > 1 && gameOn)
 		applyPhysics(&player, &velocityY, &onGround, &inAir, gravity, velocityX, scalerY, &gameOn);
 
-		if (time.asSeconds() > 30)
-			velocityX = 3.5;
-		if (time.asSeconds() > 30 && time.asSeconds() > 60)
-			velocityX = 4;
-		if (time.asSeconds() > 30 && time.asSeconds() > 60 && time.asSeconds() > 120)
-			velocityX = 4.5;
+		speedTIme = speedClock.getElapsedTime();
+		if (speedTIme.asSeconds() > 15)
+			velocityX = 5;
+		if (speedTIme.asSeconds() > 15 && speedTIme.asSeconds() > 30)
+			velocityX = 6;
+		if (speedTIme.asSeconds() > 15 && speedTIme.asSeconds() > 30 && speedTIme.asSeconds() > 60)
+			velocityX = 6.5;
 
 		//Checking if player is intersection a ground object and verifying if its over the ground
 		//for the next iteration
@@ -142,7 +143,7 @@ int main()
 		{
 			groundList.clear();
 			groundList.push_back(ground);		//putting the predefined init ground objects
-			groundList.push_back(ground3);
+			groundList.push_back(ground2);
 		}
 		else
 			groundList = generatePlatforms(player, groundList, velocityX); //generating the new ground list
@@ -160,7 +161,7 @@ int main()
 
 		score = (player.getPosition().x - 50) / 100;  //scoring formula
 		text.setString("Score: " + to_string(score));
-		text.setPosition(player.getPosition().x - 120, player.getPosition().y - 300);	// print score and follow the player
+		text.setPosition(player.getPosition().x - 130, player.getPosition().y - 230);	// print score and follow the player
 
 		window.setView(view); //set scene
 		window.clear();				//clear scene

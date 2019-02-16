@@ -6,7 +6,7 @@
 
 #define GRAVITY 0.85   //global initial gravity
 #define DIST_MAX_SCALE 30
-#define DIST_MIN_SCALE 20
+#define DIST_MIN_SCALE 23
 
 void	applyPhysics(sf::RectangleShape *player, double *velocityY, bool *onGround,
   bool *inAir, double gravity, double velocityX, float scalerY, bool *gameOn);
