@@ -2,7 +2,26 @@
 #include <bits/stdc++.h>
 #include "2dplat.h"
 
-//This function takes a vector of rectangles and generates a new vwector identical to the original
+//This function creates the start of the platformer with 2 inital premade platforms
+std::vector<sf::RectangleShape> setupStartPoint()
+{
+  std::vector<sf::RectangleShape> groundList;
+
+  sf::RectangleShape ground;			//the long ground object
+	ground.setSize(sf::Vector2f(700, 30));
+	ground.setPosition(0, 400);
+
+	sf::RectangleShape ground2;			//a platform
+	ground2.setSize(sf::Vector2f(200, 30));
+	ground2.setPosition(850, 340);
+
+	groundList.push_back(ground);		//putting the predefined init ground objects
+	groundList.push_back(ground2);
+
+  return groundList;
+}
+
+//This function takes a vector of rectangles and generates a new vector identical to the original
 //but adds a new rendomly generated rectangle at the end
 sf::RectangleShape createNewPlatform(std::vector<sf::RectangleShape> groundList, double velocityX)
 {
@@ -21,7 +40,7 @@ sf::RectangleShape createNewPlatform(std::vector<sf::RectangleShape> groundList,
   else
   {
     dist = rand() % ((int)velocityX * DIST_MAX_SCALE) + ((int)velocityX * DIST_MIN_SCALE);
-    height = rand() % 110 + -50;
+    height = rand() % 110 - 50;
   }
 
   //creating the new rectangle
@@ -32,19 +51,15 @@ sf::RectangleShape createNewPlatform(std::vector<sf::RectangleShape> groundList,
   return newPlatform;
 }
 
-//This function takes the vector of triangles and the player. It removes all the rectangles
-//behind the player and adds two new rectangles in front
 std::vector<sf::RectangleShape> generatePlatforms(sf::RectangleShape player, std::vector<sf::RectangleShape> groundList, double velocityX)
 {
-  for (int i = 0; i <= groundList.size() - 1; i++)
-  {
-    if (player.getPosition().x > groundList[i].getPosition().x + groundList[i].getSize().x + 90)
+    if (player.getPosition().x > groundList[0].getPosition().x + groundList[0].getSize().x + 190)
     {
-      groundList.erase(groundList.begin() + i);                         //erasing rectangle if behind
-      groundList.push_back(createNewPlatform(groundList, velocityX));   //add a rectangle in front
-      groundList.push_back(createNewPlatform(groundList, velocityX));   //add the second rectangle in front
+      if (groundList.size() < 4)
+        groundList.push_back(createNewPlatform(groundList, velocityX));
+      if (groundList.size() == 4)
+        groundList.erase(groundList.begin());
     }
-  }
 
   return groundList;
 }

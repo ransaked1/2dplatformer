@@ -2,31 +2,31 @@
 #include <bits/stdc++.h>
 #include "2dplat.h"
 
-void	applyPhysics(sf::RectangleShape *player, double *velocityY, bool *onGround, bool *inAir, double gravity, double velocityX, float scalerY, bool *gameOn)
+void	applyPhysics(playerObject *playerObject)
 {
 	//if object is not on the ground or in the air apply gravity
-	if (*onGround == false || *inAir == true)
+	if (playerObject->onGround == false || playerObject->inAir == true)
 	{
-		player->move(velocityX, *velocityY);
+		playerObject->player.move(playerObject->velocityX, playerObject->velocityY);
 
-		*velocityY += gravity;					//gravity decelerating velocityY
-		if(*velocityY > 10 * gravity)
-			*velocityY = 10 * gravity;
+		playerObject->velocityY += playerObject->gravity;					//gravity decelerating velocityY
+		if(playerObject->velocityY > 10 * playerObject->gravity)   //set terminal speed for fall
+			playerObject->velocityY = 10 * playerObject->gravity;
 	}
 	else
-		player->move(velocityX, 0);		//if no change in Y move on X axis
+		playerObject->player.move(playerObject->velocityX, 0);		//if no change in Y move on X axis
 
 	//reset player after falling off
-	if (player->getPosition().y > 2500)
+	if (playerObject->player.getPosition().y > 1000)
   {
-		player->setPosition(50, 390);
-    *gameOn = false;
+		playerObject->player.setPosition(50, 390);
+    playerObject->gameOn = false;
   }
 
 	//If the object is accelerating upward and is not on the ground then it's in the air
-	if (*velocityY < 0 && *onGround == false)
-		*inAir = true;
+	if (playerObject->velocityY < 0 && playerObject->onGround == false)
+		playerObject->inAir = true;
 	else
-		*inAir = false;
+		playerObject->inAir = false;
 
 }
