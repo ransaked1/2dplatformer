@@ -14,8 +14,7 @@ Also, to build the game you need the G++ compiler:
 ```
 sudo apt-get install g++
 ```
-
-
+&nbsp;
 ### Installing
 Build the project in the project root folder:
 ```
@@ -25,8 +24,7 @@ Running the game:
 ```
 ./game
 ```
-
-
+&nbsp;
 ### Additional build options
 Delete the .obj files generated:
 ```
@@ -40,7 +38,7 @@ Rebuild the project (If you made changes to the code):
 ```
 make re
 ```
-
+&nbsp;
 ### Potential Issues
 * SFML uses the X11 server for display. If you are running the app on a Windows 10 Ubuntu Subsystem, you will need to download and setup Xming in Windows: https://xming.en.softonic.com/. Then export the window path in your Ubuntu environment and run the game:
 ```
@@ -54,7 +52,7 @@ And export the windows path:
 ```
 export DISPLAY=:0.0
 ```
-
+&nbsp;
 ## Game Controls
 
 W, Up Arrow - Jump
@@ -63,5 +61,6 @@ A, Left Arrow - Left
 
 D, Right Arrow - Right
 
+&nbsp;
 ## Built With
-* [SFML](https://www.sfml-dev.org/documentation/2.5.1/) - The graphical library used
+* [SFML 2.5.1](https://www.sfml-dev.org/documentation/2.5.1/) - The graphical library used.
