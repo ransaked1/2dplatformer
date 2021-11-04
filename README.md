@@ -1,5 +1,5 @@
 # 2D Platformer
-A basic 2D plartformer in C++
+A basic 2D platformer in C++
 
 ## Getting Started
 
